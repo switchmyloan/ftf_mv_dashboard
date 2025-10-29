@@ -27,7 +27,7 @@ function LoginPage() {
     const dummyUser = {
       id: 1,
       name: "John Doe",
-      email: "admin@fintifi.com",
+      email: "admin@fintifi.in",
       password: "Admin@123",
     };
 
