@@ -111,7 +111,7 @@ const Leads = () => {
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
     // Save the File using file-saver
-    const fileName = `leads_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const fileName = `logs_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
     const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(dataBlob, fileName);
 
