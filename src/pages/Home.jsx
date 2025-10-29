@@ -40,8 +40,7 @@ const Home = () => {
       <h1 className="text-4xl font-bold text-gray-800 mb-6">Dashboard</h1>
 
       {/* Grid container for future multiple cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Leads Card */}
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div
           onClick={() => navigate("/leads")}
           className="cursor-pointer flex items-center justify-between p-6 border rounded-2xl shadow-sm hover:shadow-md transition bg-blue-50 border-blue-200"
@@ -56,7 +55,7 @@ const Home = () => {
             <Users className="h-8 w-8 text-blue-500" />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
