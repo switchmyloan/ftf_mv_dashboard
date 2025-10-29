@@ -27,7 +27,7 @@ function LoginPage() {
     const dummyUser = {
       id: 1,
       name: "John Doe",
-      email: "admin@gmail",
+      email: "admin@fintifi.com",
       password: "Admin@123",
     };
 
@@ -61,7 +61,7 @@ function LoginPage() {
         {/* Logo */}
         <div className="mb-6 flex justify-center">
           {/* <img src={logo} alt="Logo" className="w-32" /> */}
-          <h3 className="text-2xl font-bold text-gray-800">MoneyView SML</h3>
+          <h3 className="text-2xl font-bold text-gray-800">Fintifi MV</h3>
         </div>
 
         {/* Form */}
