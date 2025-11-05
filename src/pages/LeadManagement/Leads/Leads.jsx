@@ -192,7 +192,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import DataTable from '@components/Table/DataTable';
 import { Toaster } from 'react-hot-toast';
 import { leadsColumn } from '../../../components/TableHeader';
- import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getLeads } from '../../../api-services/Modules/Leads';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -238,52 +238,54 @@ const Leads = () => {
     fetchLeads();
   }, [fetchLeads]);
 
-  // 🔥🔥 MAIN MAGIC — STATUS FILTER 100% WORKING 🔥🔥
   const { tableData, filteredCount } = useMemo(() => {
     let list = [...rawData];
 
-    // 1. Today / Yesterday
-    // if (query.filter_date) {
-    //   const today = new Date().setHours(0, 0, 0, 0);
-    //   const yesterday = new Date(today);
-    //   yesterday.setDate(yesterday.getDate() - 1);
+    if (query.filter_date) {
+      const todayTimestamp = new Date().setHours(0, 0, 0, 0);
+
+      const dateForYesterday = new Date();
+      dateForYesterday.setDate(dateForYesterday.getDate() - 1);
+
+      const yesterdayTimestamp = dateForYesterday.setHours(0, 0, 0, 0);
+
+      list = list.filter(lead => {
+        const leadDateTimestamp = new Date(lead.createdAt).setHours(0, 0, 0, 0);
+
+        return query.filter_date === 'today'
+          ? leadDateTimestamp === todayTimestamp
+          : leadDateTimestamp === yesterdayTimestamp;
+      });
+    }
+
+    // 2. Date Range
+    // if (query.startDate && query.endDate) {
+    //   const start = new Date(query.startDate);
+    //   const end = new Date(query.endDate);
+    //   end.setDate(end.getDate() + 1);
 
     //   list = list.filter(lead => {
-    //     const d = new Date(lead.createdAt).setHours(0, 0, 0, 0);
-    //     return query.filter_date === 'today' ? d === today : d === yesterday;
+    //     const d = new Date(lead.createdAt);
+    //     return d > start && d < end;
     //   });
     // }
 
-    // Inside useMemo
-// 1. Today / Yesterday
-if (query.filter_date) {
-  const todayTimestamp = new Date().setHours(0, 0, 0, 0); // This is a number (timestamp)
-
-  // Create a NEW Date object for yesterday
-  const dateForYesterday = new Date(); 
-  dateForYesterday.setDate(dateForYesterday.getDate() - 1);
-  // Set its time to midnight, converting it to a number (timestamp)
-  const yesterdayTimestamp = dateForYesterday.setHours(0, 0, 0, 0); 
-  
-  list = list.filter(lead => {
-    const leadDateTimestamp = new Date(lead.createdAt).setHours(0, 0, 0, 0);
-    
-    // Correct comparison logic
-    return query.filter_date === 'today' 
-      ? leadDateTimestamp === todayTimestamp 
-      : leadDateTimestamp === yesterdayTimestamp;
-  });
-}
-
     // 2. Date Range
     if (query.startDate && query.endDate) {
+      // Start date should be the beginning of the day (inclusive)
       const start = new Date(query.startDate);
+      start.setHours(0, 0, 0, 0); // Ensure start is 00:00:00 on start date
+
+      // End date should be the end of the day (inclusive)
       const end = new Date(query.endDate);
-      end.setDate(end.getDate() + 1);
+      end.setHours(23, 59, 59, 999); // Set end to 23:59:59.999 on end date
+
+      // 🛑 REMOVE THIS LINE: end.setDate(end.getDate() + 1); 
 
       list = list.filter(lead => {
         const d = new Date(lead.createdAt);
-        return d >= start && d < end;
+        // Change d < end to d <= end to make the end date inclusive
+        return d >= start && d <= end;
       });
     }
 
@@ -296,9 +298,9 @@ if (query.filter_date) {
         const got = msg.toLowerCase().trim();
 
         if (want === 'success') {
-          return got.includes('success');  // ✅ Offer generated successfully
+          return got.includes('success');
         }
-        return got === want;  // ❌ Rejected, Duplicate, etc.
+        return got === want;
       });
     }
 
@@ -374,10 +376,10 @@ if (query.filter_date) {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Leads');
     const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    saveAs(new Blob([buf]), `leads_${new Date().toISOString().slice(0,10)}.xlsx`);
+    saveAs(new Blob([buf]), `leads_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-   const handleEdit = (lead) => {
+  const handleEdit = (lead) => {
     navigate(`/lead-detail/${lead.id}`, { state: { lead } });
   };
 
@@ -385,7 +387,7 @@ if (query.filter_date) {
     <>
       <Toaster />
       <DataTable
-       columns={leadsColumn({ handleEdit })}
+        columns={leadsColumn({ handleEdit })}
         data={tableData}
         totalDataCount={filteredCount}
         loading={loading}
@@ -402,7 +404,7 @@ if (query.filter_date) {
         activeFilter={query.filter_date}
         onFilterByRange={onFilterByRange}
         activeDateRange={{ startDate: query.startDate, endDate: query.endDate }}
-        
+
         // STATUS FILTER
         onFilterChange={handleStatusFilter}
         activeStatusFilter={query.status}
