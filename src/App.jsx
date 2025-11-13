@@ -25,6 +25,8 @@ import Roles from "@pages/AdminManagement/Roles/Roles"
 import Users from '@pages/AdminManagement/Users/Users';
 import PushNotification from '@pages/PushNotification/PushNotification';
 import LeadDetail from '@pages/LeadManagement/Leads/LeadDetail';
+import MvLogs from "./pages/LeadManagement/mvLogs/mvLogs";
+import MvLogsDetail from "./pages/LeadManagement/mvLogs/mvLogsDetail";
 
 function App() {
   return (
@@ -44,6 +46,8 @@ function App() {
             <Route path="testimonials" element={<Testimonials />} />
             <Route path="signin-user" element={<SigninUser />} />
             <Route path="logs" element={<Leads />} />
+            <Route path="mv-ivr-logs" element={<MvLogs />} />
+            <Route path="mv-ivr-logs/:id" element={<MvLogsDetail />} />
             <Route path="lead-detail/:id" element={<LeadDetail />} />
             <Route path="archive-users" element={<ArchiveUsers />} />
             <Route path="on-borde-lender-from" element={<OnBoardLender />} />

@@ -8,6 +8,13 @@ export const getLeads = async (pageNo, limit, globalFilter) => {
         }
     )
 };
+export const getIvrLogs = async (pageNo, limit, globalFilter) => {
+    return Api().get(`/leads/mv-success-leads`,
+        {
+            skipAdminAppend: true,
+        }
+    )
+};
 export const getInAppLeads = async (pageNo, limit, globalFilter) => {
     return Api().get(`/leads/admin/in-app-leads?currentPage=${pageNo}&perPage=${limit}&search=${globalFilter}`,
         {
