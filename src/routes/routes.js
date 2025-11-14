@@ -1,5 +1,4 @@
 export const routes = [
-  // --- Non-grouped ---
   {
     path: "/",
     label: "Dashboard",
@@ -7,12 +6,10 @@ export const routes = [
     showInSidebar: false,
     order: 0,
   },
-
- 
   {
     path: "/logs",
     label: "Logs",
-    icon: "ClipboardList", // ✅ leads list
+    icon: "ClipboardList", 
     showInSidebar: true,
     group: "Lead Management",
     groupOrder: 1, 

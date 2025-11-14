@@ -19,11 +19,9 @@ const debounce = (func, delay) => {
 const Leads = () => {
   const navigate = useNavigate();
   const [rawData, setRawData] = useState([]);
-  const [data1, setData1] = useState([]);
   const [loading, setLoading] = useState(false);
   const [exportDataList, setExportDataList] = useState([]);
   const [filteredCount1, setFilteredCount1] = useState(0);
-
 
   const [query, setQuery] = useState({
     page_no: 1,
@@ -42,22 +40,6 @@ const Leads = () => {
       duplicateCount: 0
   });
 
-  // const fetchLeads = useCallback(async () => {
-  //   setLoading(true);
-  //   try {
-  //     const res = await getIvrLogs(query.page_no, query.limit, query.search);
-  //     if (res?.data?.success) {
-  //       setRawData(res.data.data || []);
-  //       setData1(res.data.data || []);
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, [query.page_no, query.limit, query.search]);
-
-  // --- Updated fetchLeads function in Leads.jsx ---
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     try {
@@ -73,10 +55,7 @@ const Leads = () => {
 
       if (res?.data?.success) {
         setRawData(res.data.data || []);
-
         setFilteredCount1(res.data.pagination?.total || (res.data.data || []).length);
-
-        // 🔥 REMOVED METRICS LOGIC: Metrics calculation will now happen in useMemo.
 
       } else {
         ToastNotification.error('Failed to fetch logs');
@@ -97,37 +76,8 @@ const Leads = () => {
     query.status
   ]);
 
-  const calculatedSummaryMetrics = useMemo(() => {
-    // totalLeads ke liye hum API se aaya hua overall count (filteredCount1) use karenge
-    const totalLeads = filteredCount1;
-    let successCount = 0;
-    let rejectCount = 0;
-
-    // rawData ko iterate karke Success aur Rejected counts nikalna
-    rawData.forEach(lead => {
-      const message = lead?.lender_response?.MoneyView?.message || '';
-      const got = message.toLowerCase().trim();
-
-      // Success check (Jaisa ki aapke column definition mein tha)
-      if (got.includes('success')) {
-        successCount++;
-      }
-      // Rejected check (Jaisa ki aapke column definition mein tha)
-      if (got.includes('lead has been rejected.')) {
-        rejectCount++;
-      }
-      // Note: Duplicate, Invalid data ko rejectCount mein count nahi kiya gaya hai
-    });
-
-    return {
-      totalLeads: totalLeads,
-      successCount: successCount,
-      rejectCount: rejectCount,
-    };
-  }, [rawData, filteredCount1]);
 
   useEffect(() => {
-    // Calculated values se final state set karna
     let _list = [...rawData];
 
     if (query.filter_date) {
@@ -237,16 +187,11 @@ const Leads = () => {
       );
     }
 
-
     setExportDataList(list);
 
     const count = list.length;
     const start = (query.page_no - 1) * query.limit;
     const pageData = list.slice(start, start + query.limit);
-
-    console.log(pageData, "pagedat");
-
-
     return { tableData: pageData, filteredCount: count };
   }, [rawData, query]);
 
@@ -285,25 +230,23 @@ const Leads = () => {
   }, []);
 
   const handleExport = () => {
-    // 🛑 NOW USING exportDataList which contains the data filtered by status, date, and search.
+
     if (exportDataList.length === 0) {
       ToastNotification.info('No data to export based on current filters.');
       return;
     }
 
     const dataToExport = exportDataList.map(l => ({
+       leadId: l.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
       Name: `${l.firstName} ${l.lastName}`,
-      Email: l.email,
+      // Email: l.email,
       Phone: l.phone,
       salary: l.salary,
-      profession: l.profession,
+      // profession: l.profession,
       pincode: l.pincode,
-      panNumber: l.panNumber,
-      // is_moneyview_user: l.is_moneyview_user ? 'Yes' : 'No',
-      gender: l.gender,
-      //   dob: l.dob ? new Date(l.dob).toLocaleDateString() : 'N/A',
+      // panNumber: l.panNumber,
+      // gender: l.gender,
       Status: l.lender_response?.MoneyView?.message || 'N/A',
-      leadId: l.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
       Recevied_offer: l.lender_response?.MoneyView?.data?.resData?.data?.response?.offerObjects[0]?.loanAmount || 'N/A',
       Created: new Date(l.createdAt).toLocaleString()
     }));
@@ -312,24 +255,20 @@ const Leads = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Leads');
     const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
-
-    // saveAs(new Blob([buf]), `filtered_leads_export_${new Date().toISOString().slice(0, 10)}.xlsx`);
-    // 👉 Readable Date + Time
     const now = new Date();
 
     const date = now.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }).replace(/ /g, '-'); // 14-Nov-2025
+    }).replace(/ /g, '-'); 
 
     const time = now.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     })
       .replace(/:/g, '-')
-      .replace(' ', ''); // 10-20AM or 10-20PM
+      .replace(' ', ''); 
 
     saveAs(
       new Blob([buf]),
@@ -341,8 +280,6 @@ const Leads = () => {
   const handleEdit = (lead) => {
     navigate(`/mv-ivr-logs/${lead.id}`, { state: { lead } });
   };
-
-  console.log(summaryMetrics, "summaryMetrics")
 
   return (
     <>
