@@ -304,6 +304,7 @@ const Leads = () => {
       //   dob: l.dob ? new Date(l.dob).toLocaleDateString() : 'N/A',
       Status: l.lender_response?.MoneyView?.message || 'N/A',
       leadId: l.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
+      Recevied_offer: l.lender_response?.MoneyView?.data?.resData?.data?.response?.offerObjects[0]?.loanAmount || 'N/A',
       Created: new Date(l.createdAt).toLocaleString()
     }));
 
