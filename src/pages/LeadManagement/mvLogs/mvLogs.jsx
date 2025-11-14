@@ -1,193 +1,3 @@
-// import { useEffect, useState, useMemo } from 'react';
-// import DataTable from '@components/Table/DataTable';
-// import { Toaster } from 'react-hot-toast';
-// import { useNavigate } from 'react-router-dom';
-// import ToastNotification from '@components/Notification/ToastNotification';
-// import { getLeads } from '../../../api-services/Modules/Leads';
-// import { leadsColumn } from '../../../components/TableHeader';
-// import * as XLSX from 'xlsx';
-// import { saveAs } from 'file-saver';
-
-// const Leads = () => {
-//   const navigate = useNavigate();
-
-//   const [rawData, setRawData] = useState([]); // Full data from API
-//   const [filteredData, setFilteredData] = useState([]); // After frontend filter
-//   const [totalDataCount, setTotalDataCount] = useState(0);
-//   const [loading, setLoading] = useState(false);
-
-
-//   const [query, setQuery] = useState({
-//     page_no: 1,
-//     limit: 10,
-//     search: '',
-//     filter_date: '', // 'today' | 'yesterday' | ''
-//   });
-
-//   // Fetch all leads (no date filter in API)
-//   const fetchLeads = async () => {
-//     setLoading(true);
-//     try {
-//       const response = await getLeads(query.page_no, query.limit, query.search);
-
-//       if (response?.data?.success) {
-//         const leads = response.data.data || [];
-//         setRawData(leads);
-//         setTotalDataCount(response.data.pagination?.total || leads.length);
-//       } else {
-//         ToastNotification.error('Failed to fetch leads');
-//       }
-//     } catch (error) {
-//       console.error('Error:', error);
-//       ToastNotification.error('Failed to fetch leads');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // Re-fetch when pagination or search changes
-//   useEffect(() => {
-//     fetchLeads();
-//   }, [query.page_no, query.limit, query.search]);
-
-//   // Frontend filtering: Today / Yesterday
-//   const filteredLeads = useMemo(() => {
-//     if (!query.filter_date) return rawData;
-
-//     const now = new Date();
-//     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-//     const yesterday = new Date(today);
-//     yesterday.setDate(today.getDate() - 1);
-
-//     return rawData.filter((lead) => {
-//       const leadDate = new Date(lead.createdAt);
-//       const leadDay = new Date(leadDate.getFullYear(), leadDate.getMonth(), leadDate.getDate());
-
-//       if (query.filter_date === 'today') {
-//         return leadDay.getTime() === today.getTime();
-//       } else if (query.filter_date === 'yesterday') {
-//         return leadDay.getTime() === yesterday.getTime();
-//       }
-//       return true;
-//     });
-//   }, [rawData, query.filter_date]);
-
-//   // Apply search filter on filteredLeads
-//   const searchFiltered = useMemo(() => {
-//     if (!query.search) return filteredLeads;
-
-//     const lowerSearch = query.search.toLowerCase();
-//     return filteredLeads.filter((lead) =>
-//       `${lead.firstName} ${lead.lastName} ${lead.email} ${lead.phone} ${lead.panNumber}`
-//         .toLowerCase()
-//         .includes(lowerSearch)
-//     );
-//   }, [filteredLeads, query.search]);
-
-//   // Final data for DataTable
-//   const tableData = searchFiltered;
-
-//   // Update DataTable when filter changes
-//   useEffect(() => {
-//     setFilteredData(tableData);
-//   }, [tableData]);
-
-//   // Pagination handler
-//   const onPageChange = (pagination) => {
-//     setQuery((prev) => ({
-//       ...prev,
-//       page_no: pagination.pageIndex + 1,
-//       limit: pagination.pageSize,
-//     }));
-//   };
-
-//   // Search handler
-//   const onSearch = (searchTerm) => {
-//     setQuery((prev) => ({
-//       ...prev,
-//       search: searchTerm,
-//       page_no: 1,
-//     }));
-//   };
-
-//   // Today / Yesterday filter
-//   const onFilterByDate = (type) => {
-//     setQuery((prev) => ({
-//       ...prev,
-//       filter_date: prev.filter_date === type ? '' : type,
-//       page_no: 1, // reset page
-//     }));
-//   };
-
-//   const handleExport = () => {
-//     if (tableData.length === 0) {
-//       ToastNotification.info('No data to export.');
-//       return;
-//     }
-
-//     const exportData = tableData.map((lead) => ({
-//       'Lead ID': lead.id,
-//       'Created At': new Date(lead.createdAt).toLocaleString(),
-//       'First Name': lead.firstName,
-//       'Last Name': lead.lastName,
-//       'Email': lead.email,
-//       'Phone': lead.phone,
-//       'PAN': lead.panNumber,
-//       'DOB': lead.dob ? new Date(lead.dob).toLocaleDateString() : 'N/A',
-//       'Profession': lead.profession,
-//       'Salary': lead.salary,
-//       'Loan Amount': lead.loanAmount,
-//       'Pincode': lead.pincode,
-//       'MoneyView User': lead.is_moneyview_user ? 'Yes' : 'No',
-//       'MoneyView Status': lead.lender_response?.MoneyView?.message || 'N/A',
-//       'Is Active': lead.isActive ? 'Yes' : 'No',
-//     }));
-
-//     const ws = XLSX.utils.json_to_sheet(exportData);
-//     const wb = XLSX.utils.book_new();
-//     XLSX.utils.book_append_sheet(wb, ws, 'Leads');
-//     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-//     const fileName = `leads_${query.filter_date || 'all'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
-//     saveAs(new Blob([excelBuffer]), fileName);
-
-//     ToastNotification.success('Exported successfully!');
-//   };
-
-//   const handleEdit = (lead) => {
-//     navigate(`/lead-detail/${lead.id}`, { state: { lead } });
-//   };
-
-//   const handleCreate = () => {
-//     navigate('/leads/create');
-//   };
-
-//     const filteredCount = searchFiltered.length;
-
-//   return (
-//     <>
-//       <Toaster  />
-//       <DataTable
-//         columns={leadsColumn({ handleEdit })}
-//         data={filteredData} // Filtered in frontend
-//         totalDataCount={filteredCount}
-//         title="Logs"
-//         loading={loading}
-//         onPageChange={onPageChange}
-//         onRefresh={fetchLeads}
-//         onExport={handleExport}
-       
-//         onFilterByDate={onFilterByDate}
-     
-//   activeFilter={query.filter_date}
-//       />
-//     </>
-//   );
-// };
-
-// export default Leads;
-
-
-
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import DataTable from '@components/Table/DataTable';
 import { Toaster } from 'react-hot-toast';
@@ -196,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { getIvrLogs, getLeads } from '../../../api-services/Modules/Leads';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import SummaryCards from '../../../components/Table/SummaryCards';
 
 const debounce = (func, delay) => {
   let timeoutId;
@@ -210,7 +21,9 @@ const Leads = () => {
   const [rawData, setRawData] = useState([]);
   const [data1, setData1] = useState([]);
   const [loading, setLoading] = useState(false);
-   const [exportDataList, setExportDataList] = useState([]); 
+  const [exportDataList, setExportDataList] = useState([]);
+  const [filteredCount1, setFilteredCount1] = useState(0);
+
 
   const [query, setQuery] = useState({
     page_no: 1,
@@ -222,20 +35,132 @@ const Leads = () => {
     status: 'success'
   });
 
+  const [summaryMetrics, setSummaryMetrics] = useState({
+    totalLeads: 0,
+    successCount: 0,
+    rejectCount: 0,
+  });
+
+  // const fetchLeads = useCallback(async () => {
+  //   setLoading(true);
+  //   try {
+  //     const res = await getIvrLogs(query.page_no, query.limit, query.search);
+  //     if (res?.data?.success) {
+  //       setRawData(res.data.data || []);
+  //       setData1(res.data.data || []);
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [query.page_no, query.limit, query.search]);
+
+  // --- Updated fetchLeads function in Leads.jsx ---
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getIvrLogs(query.page_no, query.limit, query.search);
+      const res = await getIvrLogs(
+        query.page_no,
+        query.limit,
+        query.search,
+        query.filter_date,
+        query.startDate,
+        query.endDate,
+        query.status
+      );
+
       if (res?.data?.success) {
         setRawData(res.data.data || []);
-        setData1(res.data.data || []);
+
+        setFilteredCount1(res.data.pagination?.total || (res.data.data || []).length);
+
+        // 🔥 REMOVED METRICS LOGIC: Metrics calculation will now happen in useMemo.
+
+      } else {
+        ToastNotification.error('Failed to fetch logs');
       }
     } catch (err) {
       console.error(err);
+      ToastNotification.error('Error fetching logs');
     } finally {
       setLoading(false);
     }
-  }, [query.page_no, query.limit, query.search]);
+  }, [
+    query.page_no,
+    query.limit,
+    query.search,
+    query.filter_date,
+    query.startDate,
+    query.endDate,
+    query.status
+  ]);
+
+  const calculatedSummaryMetrics = useMemo(() => {
+    // totalLeads ke liye hum API se aaya hua overall count (filteredCount1) use karenge
+    const totalLeads = filteredCount1;
+    let successCount = 0;
+    let rejectCount = 0;
+
+    // rawData ko iterate karke Success aur Rejected counts nikalna
+    rawData.forEach(lead => {
+      const message = lead?.lender_response?.MoneyView?.message || '';
+      const got = message.toLowerCase().trim();
+
+      // Success check (Jaisa ki aapke column definition mein tha)
+      if (got.includes('success')) {
+        successCount++;
+      }
+      // Rejected check (Jaisa ki aapke column definition mein tha)
+      if (got.includes('lead has been rejected.')) {
+        rejectCount++;
+      }
+      // Note: Duplicate, Invalid data ko rejectCount mein count nahi kiya gaya hai
+    });
+
+    return {
+      totalLeads: totalLeads,
+      successCount: successCount,
+      rejectCount: rejectCount,
+    };
+  }, [rawData, filteredCount1]);
+
+  useEffect(() => {
+    // Calculated values se final state set karna
+    let _list = [...rawData];
+
+    if (query.filter_date) {
+      const todayTimestamp = new Date().setHours(0, 0, 0, 0);
+
+      const dateForYesterday = new Date();
+      dateForYesterday.setDate(dateForYesterday.getDate() - 1);
+
+      const yesterdayTimestamp = dateForYesterday.setHours(0, 0, 0, 0);
+
+      _list = _list.filter(lead => {
+        const leadDateTimestamp = new Date(lead.createdAt).setHours(0, 0, 0, 0);
+
+        return query.filter_date === 'today'
+          ? leadDateTimestamp === todayTimestamp
+          : leadDateTimestamp === yesterdayTimestamp;
+      });
+
+    }
+
+    setSummaryMetrics({
+      totalLeads: _list.length,
+      successCount: _list.filter(lead => {
+        const msg = lead?.lender_response?.MoneyView?.message || '';
+        const got = msg.toLowerCase().trim();
+        return got.includes('success');
+      }).length,
+      rejectCount: _list.filter(lead => {
+        const msg = lead?.lender_response?.MoneyView?.message || '';
+        const got = msg.toLowerCase().trim();
+        return got.includes('lead has been rejected.');
+      }).length
+    })
+  }, [query.filter_date, query]);
 
   useEffect(() => {
     fetchLeads();
@@ -259,9 +184,8 @@ const Leads = () => {
           ? leadDateTimestamp === todayTimestamp
           : leadDateTimestamp === yesterdayTimestamp;
       });
-    }
 
-   
+    }
 
     // 2. Date Range
     if (query.startDate && query.endDate) {
@@ -308,11 +232,14 @@ const Leads = () => {
     }
 
 
-      setExportDataList(list); 
+    setExportDataList(list);
 
     const count = list.length;
     const start = (query.page_no - 1) * query.limit;
     const pageData = list.slice(start, start + query.limit);
+
+    console.log(pageData, "pagedat");
+
 
     return { tableData: pageData, filteredCount: count };
   }, [rawData, query]);
@@ -368,8 +295,9 @@ const Leads = () => {
       panNumber: l.panNumber,
       // is_moneyview_user: l.is_moneyview_user ? 'Yes' : 'No',
       gender: l.gender,
-    //   dob: l.dob ? new Date(l.dob).toLocaleDateString() : 'N/A',
+      //   dob: l.dob ? new Date(l.dob).toLocaleDateString() : 'N/A',
       Status: l.lender_response?.MoneyView?.message || 'N/A',
+      leadId: l.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
       Created: new Date(l.createdAt).toLocaleString()
     }));
 
@@ -381,25 +309,25 @@ const Leads = () => {
 
     // saveAs(new Blob([buf]), `filtered_leads_export_${new Date().toISOString().slice(0, 10)}.xlsx`);
     // 👉 Readable Date + Time
-  const now = new Date();
+    const now = new Date();
 
-  const date = now.toLocaleDateString('en-US', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  }).replace(/ /g, '-'); // 14-Nov-2025
+    const date = now.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).replace(/ /g, '-'); // 14-Nov-2025
 
-  const time = now.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  .replace(/:/g, '-')
-  .replace(' ', ''); // 10-20AM or 10-20PM
+    const time = now.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+      .replace(/:/g, '-')
+      .replace(' ', ''); // 10-20AM or 10-20PM
 
-  saveAs(
-    new Blob([buf]),
-    `filtered_leads_export_${date}_${time}.xlsx`
-  );
+    saveAs(
+      new Blob([buf]),
+      `filtered_leads_export_${date}_${time}.xlsx`
+    );
     ToastNotification.success('Exported successfully!');
   };
 
@@ -407,9 +335,18 @@ const Leads = () => {
     navigate(`/mv-ivr-logs/${lead.id}`, { state: { lead } });
   };
 
+  console.log(summaryMetrics, "summaryMetrics")
+
   return (
     <>
       <Toaster />
+
+      <SummaryCards
+        totalLeads={summaryMetrics.totalLeads}
+        successCount={summaryMetrics.successCount}
+        rejectCount={summaryMetrics.rejectCount}
+        loading={loading}
+      />
       <DataTable
         columns={ivrLogsColumn({ handleEdit })}
         data={tableData}

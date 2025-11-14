@@ -1,4 +1,4 @@
-import React, { useState,useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Plus, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RefreshCcw, Download, Calendar } from 'lucide-react';
 import {
   useReactTable,
@@ -10,11 +10,11 @@ import {
 
 import { Search } from "lucide-react";
 
-const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 1000,placeholder = "Search...", ...props }) => {
+const DebouncedInput = ({ value: initialValue, onChange, onSearch, debounce = 1000, placeholder = "Search...", ...props }) => {
   // States
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef(null);
-  const mode  = "light"
+  const mode = "light"
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
@@ -266,7 +266,7 @@ function DataTable({
     </tr>
   );
 
-    const handleSearch = (value) => {
+  const handleSearch = (value) => {
     setGlobalFilter(value);
   };
 
@@ -310,8 +310,8 @@ function DataTable({
                   setShowDateRangeInputs(!showDateRangeInputs);
                 }}
                 className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border transition ${activeDateRange.startDate
-                    ? 'bg-purple-600 text-white border-purple-600' // Active style
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-purple-50 hover:border-purple-400'
+                  ? 'bg-purple-600 text-white border-purple-600' // Active style
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-purple-50 hover:border-purple-400'
                   } disabled:opacity-50`}
                 disabled={loading}
               >
@@ -416,12 +416,12 @@ function DataTable({
              transition-all duration-200 shadow-sm text-sm"
             disabled={loading}
           /> */}
-             <DebouncedInput
-              value={globalFilter}
-              onChange={setGlobalFilter}
-              onSearch={handleSearch}
-              placeholder="Search..."
-            />
+          <DebouncedInput
+            value={globalFilter}
+            onChange={setGlobalFilter}
+            onSearch={handleSearch}
+            placeholder="Search..."
+          />
           {!onCreate && (
             <button
               onClick={onCreate}
