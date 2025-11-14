@@ -1,8 +1,8 @@
 // SummaryCards.jsx
 import React from 'react';
-import { Users, CheckCircle, XCircle } from 'lucide-react';
+import { Users, CheckCircle, XCircle, TriangleAlert  } from 'lucide-react';
 
-const SummaryCards = ({ totalLeads, successCount, rejectCount, loading }) => {
+const SummaryCards = ({ totalLeads, successCount, rejectCount, duplicateCount, loading }) => {
   // ... (JSX implementation as provided in the previous response)
   const cards = [
     { 
@@ -26,6 +26,13 @@ const SummaryCards = ({ totalLeads, successCount, rejectCount, loading }) => {
       color: "text-red-600",
       bg: "bg-red-50"
     },
+     { 
+      title: "Duplicate", 
+      value: duplicateCount, 
+      icon: TriangleAlert, 
+      color: "text-yellow-600",
+      bg: "bg-yellow-50"
+    },
   ];
 
   const SkeletonCard = () => (
@@ -36,9 +43,10 @@ const SummaryCards = ({ totalLeads, successCount, rejectCount, loading }) => {
   );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+    <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-4 gap-4 mb-4">
       {loading ? (
         <>
+          <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />

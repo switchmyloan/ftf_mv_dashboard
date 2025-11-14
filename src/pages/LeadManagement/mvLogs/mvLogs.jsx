@@ -39,6 +39,7 @@ const Leads = () => {
     totalLeads: 0,
     successCount: 0,
     rejectCount: 0,
+      duplicateCount: 0
   });
 
   // const fetchLeads = useCallback(async () => {
@@ -158,6 +159,11 @@ const Leads = () => {
         const msg = lead?.lender_response?.MoneyView?.message || '';
         const got = msg.toLowerCase().trim();
         return got.includes('lead has been rejected.');
+      }).length,
+      duplicateCount: _list.filter(lead => {
+        const msg = lead?.lender_response?.MoneyView?.message || '';
+        const got = msg.toLowerCase().trim();
+        return got.includes('duplicate user (dedupe)');
       }).length
     })
   }, [query.filter_date, query]);
@@ -345,6 +351,7 @@ const Leads = () => {
         totalLeads={summaryMetrics.totalLeads}
         successCount={summaryMetrics.successCount}
         rejectCount={summaryMetrics.rejectCount}
+        duplicateCount={summaryMetrics.duplicateCount}
         loading={loading}
       />
       <DataTable
