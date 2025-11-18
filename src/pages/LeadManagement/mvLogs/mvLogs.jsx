@@ -237,9 +237,9 @@ const Leads = () => {
     }
 
     const dataToExport = exportDataList.map(l => ({
-       leadId: l.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
-      Name: `${l.firstName} ${l.lastName}`,
-      // Email: l.email,
+       leadId: l?.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
+      Name: `${l?.firstName} ${l?.lastName}`,
+      Email: l?.email,
       Phone: l.phone,
       salary: l.salary,
       // profession: l.profession,
