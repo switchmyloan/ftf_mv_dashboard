@@ -30,7 +30,7 @@ const Leads = () => {
     page_no: 1,
     limit: 10,
     search: '',
-    filter_date: '',
+    filter_date: 'today',
     startDate: null,
     endDate: null,
     status: 'success'
@@ -40,83 +40,77 @@ const Leads = () => {
     totalLeads: 0,
     successCount: 0,
     rejectCount: 0,
-      duplicateCount: 0
+    duplicateCount: 0
   });
+
+  const fetchLeads = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getIvrLogs(
+        query.filter_date,
+        query.startDate,
+        query.endDate
+      );
+
+      if (res?.data?.success) {
+        setRawData(res.data.data || []);
+        setFilteredCount1(res.data.pagination?.total || (res.data.data || []).length);
+
+      } else {
+        ToastNotification.error('Failed to fetch logs');
+      }
+    } catch (err) {
+      console.error(err);
+      ToastNotification.error('Error fetching logs');
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    query.filter_date, query.startDate, query.fromDate
+  ]);
+
 
   // const fetchLeads = useCallback(async () => {
   //   setLoading(true);
+
   //   try {
+  //     // Try cache first
+  //     const cached = await loadCache("mvi_ivr_logs");
+  //     if (cached) {
+  //       console.log("Loaded from cache (IndexedDB)");
+  //       setRawData(cached);
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     // Cache not found OR expired → API call
+  //     console.log("Cache expired → API calling...");
   //     const res = await getIvrLogs(
-  //       query.page_no,
-  //       query.limit,
-  //       query.search,
   //       query.filter_date,
   //       query.startDate,
-  //       query.endDate,
-  //       query.status
+  //       query.endDate
   //     );
 
   //     if (res?.data?.success) {
-  //       setRawData(res.data.data || []);
-  //       setFilteredCount1(res.data.pagination?.total || (res.data.data || []).length);
+  //       const apiData = res.data.data || [];
 
+  //       // PROCESS DATA IN CHUNKS (no UI freeze)
+  //       const processed = await processChunks(apiData, 5000);
+
+  //       // Save cache for 10 minutes
+  //       await saveCache("mvi_ivr_logs", processed, 5);
+
+  //       setRawData(processed);
   //     } else {
-  //       ToastNotification.error('Failed to fetch logs');
+  //       ToastNotification.error("Failed to fetch logs");
   //     }
   //   } catch (err) {
   //     console.error(err);
-  //     ToastNotification.error('Error fetching logs');
+  //     ToastNotification.error("Failed to fetch logs");
   //   } finally {
   //     setLoading(false);
   //   }
-  // }, [
-  //   query.page_no,
-  //   query.limit,
-  //   query.search,
-  //   query.filter_date,
-  //   query.startDate,
-  //   query.endDate,
-  //   query.status
-  // ]);
-
-
-  const fetchLeads = useCallback(async () => {
-  setLoading(true);
-
-  try {
-    // Try cache first
-    const cached = await loadCache("mvi_ivr_logs");
-    if (cached) {
-      console.log("Loaded from cache (IndexedDB)");
-      setRawData(cached);
-      setLoading(false);
-      return;
-    }
-
-    // Cache not found OR expired → API call
-    console.log("Cache expired → API calling...");
-    const res = await getIvrLogs(query.page_no, query.limit, query.search);
-
-    if (res?.data?.success) {
-      const apiData = res.data.data || [];
-
-      // PROCESS DATA IN CHUNKS (no UI freeze)
-      const processed = await processChunks(apiData, 5000);
-
-      // Save cache for 10 minutes
-      await saveCache("mvi_ivr_logs", processed, 5);
-
-      setRawData(processed);
-    } else {
-      ToastNotification.error("Failed to fetch logs");
-    }
-  } catch (err) {
-    console.error(err);
-    ToastNotification.error("Failed to fetch logs");
-  } finally {
-    setLoading(false);
-  }
-}, [query.page_no, query.limit, query.search]);
+  // }, [query.filter_date, query.startDate, query.fromDate]);
 
   useEffect(() => {
     let _list = [...rawData];
@@ -278,7 +272,7 @@ const Leads = () => {
     }
 
     const dataToExport = exportDataList.map(l => ({
-       leadId: l?.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
+      leadId: l?.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
       Name: `${l?.firstName} ${l?.lastName}`,
       Email: l?.email,
       Phone: l.phone,
@@ -302,14 +296,14 @@ const Leads = () => {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
-    }).replace(/ /g, '-'); 
+    }).replace(/ /g, '-');
 
     const time = now.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     })
       .replace(/:/g, '-')
-      .replace(' ', ''); 
+      .replace(' ', '');
 
     saveAs(
       new Blob([buf]),

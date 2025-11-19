@@ -8,9 +8,18 @@ export const getLeads = async (pageNo, limit, globalFilter) => {
         }
     )
 };
-export const getIvrLogs = async (pageNo, limit, globalFilter) => {
+export const getIvrLogs = async (
+    filterType,
+    fromDate,
+    toDate
+) => {
     return Api().get(`/leads/mv-success-leads`,
         {
+            params: {
+                type: filterType,
+                fromDate: fromDate,
+                toDate: toDate
+            },
             skipAdminAppend: true,
         }
     )
