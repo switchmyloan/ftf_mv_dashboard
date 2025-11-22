@@ -266,6 +266,8 @@ const Leads = () => {
             );
         }
 
+         setExportDataList(list);
+
         const count = list.length;
         const start = (query.page_no - 1) * query.limit;
         const pageData = list.slice(start, start + query.limit);
@@ -316,7 +318,7 @@ const Leads = () => {
         }
 
         const dataToExport = exportDataList.map(l => ({
-            leadId: l?.lender_response?.MoneyView?.data?.resData?.data?.requestBody || 'N/A',
+            leadId: l?.id || 'N/A',
             Name: `${l?.firstName} ${l?.lastName}`,
             Email: l?.email,
             Phone: l.phone,
@@ -325,8 +327,8 @@ const Leads = () => {
             pincode: l.pincode,
             // panNumber: l.panNumber,
             // gender: l.gender,
-            Status: l.lender_response?.MoneyView?.message || 'N/A',
-            Recevied_offer: l.lender_response?.MoneyView?.data?.resData?.data?.response?.offerObjects[0]?.loanAmount || 'N/A',
+            Status: l.lender_response?.omozing?.message || 'N/A',
+            // Recevied_offer: l.lender_response?.MoneyView?.data?.resData?.data?.response?.offerObjects[0]?.loanAmount || 'N/A',
             Created: new Date(l.createdAt).toLocaleString()
         }));
 
@@ -351,13 +353,13 @@ const Leads = () => {
 
         saveAs(
             new Blob([buf]),
-            `FTF_filtered_leads_export_${date}_${time}.xlsx`
+            `OMOZING_filtered_leads_export_${date}_${time}.xlsx`
         );
         ToastNotification.success('Exported successfully!');
     };
 
     const handleEdit = (lead) => {
-        navigate(`/rm-logs/${lead.id}`, { state: { lead } });
+        navigate(`/omozing-logs/${lead.id}`, { state: { lead } });
     };
 
 

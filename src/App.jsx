@@ -8,9 +8,11 @@ import NotFound from '@pages/NotFound';
 import LeadDetail from '@pages/LeadManagement/Leads/LeadDetail';
 import MvLogs from "./pages/LeadManagement/mvLogs/mvLogs";
 import MvLogsDetail from "./pages/LeadManagement/mvLogs/mvLogsDetail";
+import RmLogsDetail from "./pages/LeadManagement/rmLogs/rmLogsDetail";
 import DefaultLayout from './layouts/DefaultLayout';
 import RMLogs from './pages/LeadManagement/rmLogs/rmLogs';
 import OmozingLogs from './pages/LeadManagement/omozingLogs/omozingLogs';
+import OmozingLogsDetail from './pages/LeadManagement/omozingLogs/omozingDetail'
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
             <Route path="rm-logs" element={<RMLogs />} />
             <Route path="omozing-logs" element={<OmozingLogs />} />
             <Route path="mv-ivr-logs/:id" element={<MvLogsDetail />} />
+            <Route path="omozing-logs/:id" element={<OmozingLogsDetail />} />
+            <Route path="rm-logs/:id" element={<RmLogsDetail />} />
             <Route path="lead-detail/:id" element={<LeadDetail />} />
           <Route path="*" element={<NotFound />} />
           </Route>
