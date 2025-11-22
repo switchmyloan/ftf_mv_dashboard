@@ -25,11 +25,11 @@ function App() {
             <Route index element={<Home />} />   
             <Route path="logs" element={<Leads />} />
             <Route path="mv-ivr-logs" element={<MvLogs />} />
-            <Route path="rm-logs" element={<RMLogs />} />
+            <Route path="rf-logs" element={<RMLogs />} />
             <Route path="omozing-logs" element={<OmozingLogs />} />
             <Route path="mv-ivr-logs/:id" element={<MvLogsDetail />} />
             <Route path="omozing-logs/:id" element={<OmozingLogsDetail />} />
-            <Route path="rm-logs/:id" element={<RmLogsDetail />} />
+            <Route path="rf-logs/:id" element={<RmLogsDetail />} />
             <Route path="lead-detail/:id" element={<LeadDetail />} />
           <Route path="*" element={<NotFound />} />
           </Route>

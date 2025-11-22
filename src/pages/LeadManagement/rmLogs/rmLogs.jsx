@@ -363,13 +363,13 @@ query.filter_date, query.startDate, query.endDate
 
         saveAs(
             new Blob([buf]),
-            `RM_filtered_leads_export_${date}_${time}.xlsx`
+            `RF_filtered_leads_export_${date}_${time}.xlsx`
         );
         ToastNotification.success('Exported successfully!');
     };
 
     const handleEdit = (lead) => {
-        navigate(`/rm-logs/${lead.id}`, { state: { lead } });
+        navigate(`/rf-logs/${lead.id}`, { state: { lead } });
     };
 
 
@@ -394,7 +394,7 @@ query.filter_date, query.startDate, query.endDate
                 onExport={handleExport}
                 onCreate={() => navigate('/leads/create')}
                 createLabel="Add Lead"
-                title="RM Logs"
+                title="RF Logs"
 
                 // Filters
                 onFilterByDate={onFilterByDate}

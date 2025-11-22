@@ -25,8 +25,8 @@ export const routes = [
     order: 3,
   },
   {
-    path: "/rm-logs",
-    label: "RM Logs",
+    path: "/rf-logs",
+    label: "RF Logs",
     icon: "ClipboardList", 
     showInSidebar: true,
     group: "Lead Management",
