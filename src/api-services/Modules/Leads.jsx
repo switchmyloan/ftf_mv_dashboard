@@ -24,6 +24,30 @@ export const getIvrLogs = async (
         }
     )
 };
+export const getRmLogs = async (
+    filterType,
+    fromDate,
+    toDate
+) => {
+    return Api().get(`/leads/rm-success-leads`,
+        {
+          
+            skipAdminAppend: true,
+        }
+    )
+};
+export const getOmozingLogs = async (
+    filterType,
+    fromDate,
+    toDate
+) => {
+    return Api().get(`/leads/omozing-success-leads`,
+        {
+          
+            skipAdminAppend: true,
+        }
+    )
+};
 export const getInAppLeads = async (pageNo, limit, globalFilter) => {
     return Api().get(`/leads/admin/in-app-leads?currentPage=${pageNo}&perPage=${limit}&search=${globalFilter}`,
         {

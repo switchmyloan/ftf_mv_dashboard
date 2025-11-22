@@ -23,5 +23,23 @@ export const routes = [
     group: "Lead Management",
     groupOrder: 1, 
     order: 3,
+  },
+  {
+    path: "/rm-logs",
+    label: "RM Logs",
+    icon: "ClipboardList", 
+    showInSidebar: true,
+    group: "Lead Management",
+    groupOrder: 1, 
+    order: 4,
+  },
+  {
+    path: "/omozing-logs",
+    label: "Omozing Logs",
+    icon: "ClipboardList", 
+    showInSidebar: true,
+    group: "Lead Management",
+    groupOrder: 1, 
+    order: 5,
   }
 ];

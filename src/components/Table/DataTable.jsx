@@ -80,7 +80,8 @@ function DataTable({
   onFilterByRange,
   activeDateRange = { startDate: null, endDate: null },
   activeStatusFilter = '',
-  onFilterChange,
+  onStatusFilterChange, // Renamed handler for clarity
+  statusFilterOptions = [], // Array of { value: 'statusValue', label: 'Display Label' }
 }) {
   const [sorting, setSorting] = React.useState([]);
   // We keep globalFilter, but pass it to onSearch prop instead of ReactTable filtering
@@ -274,29 +275,33 @@ function DataTable({
     <div className="p-3 md:p-4 md:pb-2 md:pt-2 bg-gray-50 rounded-lg shadow-sm  pt-0 pb-0 ">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-1">
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-800">{title}</h1>
+        <h1 className="text-xl md:text-xl font-semibold text-gray-800">{title}</h1>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
 
 
           <span className="text-gray-600 text-sm">
-            Showing {totalDataCount} entries
+            {totalDataCount} entries
           </span>
 
-          {onFilterChange && (
-            <div className=" z-20  flex flex-col  w-48">
+          {/* ⭐ DYNAMIC STATUS FILTER IMPLEMENTATION ⭐ */}
+          {onStatusFilterChange && statusFilterOptions.length > 0 && (
+            <div className="z-20 flex flex-col w-48">
               <select
-                onChange={(e) => onFilterChange(e.target.value)}
+                onChange={(e) => onStatusFilterChange(e.target.value)}
                 value={activeStatusFilter}
                 className="p-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-purple-400"
               >
                 <option value="">All Status</option>
-                <option value="success">✅ Success</option>
-                <option value="Lead has been rejected.">❌ Rejected</option>
-                <option value="duplicate user (dedupe)">🔁 Duplicate</option>
-                <option value="invalid data to get offer for lead">⚠️ Invalid Data</option>
+                {statusFilterOptions.map((option, index) => (
+                  <option 
+                    key={index} // or use option.value if guaranteed unique
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
-
           )}
 
           {/* DATE RANGE FILTER UI (FIXED) */}

@@ -19,6 +19,13 @@ const debounce = (func, delay) => {
   };
 };
 
+const IVR_MV_LOGS_STATUS_OPTIONS = [
+  { value: "success", label: "✅ Success" }, // Will match anything that includes 'success'
+  { value: "lead has been rejected.", label: "❌ Rejected" },
+  { value: "duplicate user (dedupe)", label: "🔁 Duplicate" },
+  { value: "Invalid Data", label: "⚠️ Invalid Data" }, // Placeholder if MoneyView has an Invalid Data message
+];
+
 const Leads = () => {
   const navigate = useNavigate();
   const [rawData, setRawData] = useState([]);
@@ -111,6 +118,48 @@ const Leads = () => {
   //     setLoading(false);
   //   }
   // }, [query.filter_date, query.startDate, query.fromDate]);
+
+  const dynamicMetrics = useMemo(() => {
+    // This structure is better for SummaryCards component regardless of fields
+    return [
+      {
+        title: "Total Logs",
+        value: summaryMetrics.totalLeads,
+        icon: "Users",
+        color: "text-blue-600",
+        bg: "bg-blue-50"
+      },
+      {
+        title: "Successful",
+        value: summaryMetrics.successCount,
+        icon: "CheckCircle",
+        color: "text-green-600",
+        bg: "bg-green-50"
+      },
+      {
+        title: "Rejected",
+        value: summaryMetrics.rejectCount,
+        icon: "XCircle",
+        color: "text-red-600",
+        bg: "bg-red-50"
+      },
+      {
+        title: "Duplicate",
+        value: summaryMetrics.duplicateCount,
+        icon: "TriangleAlert",
+        color: "text-yellow-600",
+        bg: "bg-yellow-50"
+      },
+      // If MoneyView uses a specific message for invalid data, add it here:
+      // {
+      //     title: "Invalid Data",
+      //     value: summaryMetrics.invalidDataCount || 0,
+      //     icon: "ShieldOff",
+      //     color: "text-purple-600",
+      //     bg: "bg-purple-50"
+      // },
+    ];
+  }, [summaryMetrics]);
 
   useEffect(() => {
     let _list = [...rawData];
@@ -321,10 +370,7 @@ const Leads = () => {
       <Toaster />
 
       <SummaryCards
-        totalLeads={summaryMetrics.totalLeads}
-        successCount={summaryMetrics.successCount}
-        rejectCount={summaryMetrics.rejectCount}
-        duplicateCount={summaryMetrics.duplicateCount}
+        metrics={dynamicMetrics}
         loading={loading}
       />
       <DataTable
@@ -346,9 +392,12 @@ const Leads = () => {
         onFilterByRange={onFilterByRange}
         activeDateRange={{ startDate: query.startDate, endDate: query.endDate }}
 
-        // STATUS FILTER
-        onFilterChange={handleStatusFilter}
+        // STATUS FILTER (Using the new dynamic props)
+        onStatusFilterChange={handleStatusFilter} // Use the standard dynamic handler name
+        statusFilterOptions={IVR_MV_LOGS_STATUS_OPTIONS} // Pass the dynamic options array
         activeStatusFilter={query.status}
+
+      // onFilterChange={handleStatusFilter}
       />
     </>
   );
