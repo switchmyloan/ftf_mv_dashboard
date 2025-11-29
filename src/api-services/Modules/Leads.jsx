@@ -12,21 +12,22 @@ export const getIvrLogs = async ({
     type,
     fromDate,
     toDate,
-    search = '',
     perPage = 10,
     currentPage = 1,
-    status = ''
+    status = '',
+    search = '',
 }) => {
     return Api().get(`/leads/mv-success-leads`,
         {
             params: {
                 type,
-                fromDate,               // optional
-                toDate,                 // optional
-                search,                 // search term
-                perPage,                // number of records per page
-                currentPage,            // page number
-                status                  // status filter: success, reject, duplicate
+                fromDate,
+                toDate,
+                search,
+                perPage,
+                currentPage,
+                status,
+                search
             },
             skipAdminAppend: true,
         }

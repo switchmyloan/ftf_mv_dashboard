@@ -58,7 +58,8 @@ const Leads = () => {
         toDate: query.endDate,
         perPage: query.limit,
         currentPage: query.page_no,
-        status: query.status
+        status: query.status,
+        search: query.search
       });
       // Expectation: res?.data?.success and res.data.data array
       if (res?.data) {
@@ -82,7 +83,7 @@ const Leads = () => {
     } finally {
       setLoading(false);
     }
-  }, [query.filter_date, query.startDate, query.endDate, query.limit, query.page_no, query.status]);
+  }, [query.filter_date, query.startDate, query.endDate, query.limit, query.page_no, query.status, query.search]);
 
   useEffect(() => {
     fetchLeads();

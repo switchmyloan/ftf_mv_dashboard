@@ -296,7 +296,13 @@ function MainTable({
                         </button>
                         <button
                             className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50"
-                            onClick={() => table.previousPage()}
+                            // onClick={() => table.previousPage()}
+                            onClick={() =>
+                                setPagination(prev => ({
+                                    ...prev,
+                                    pageIndex: Math.max(prev.pageIndex - 1, 0)
+                                }))
+                            }
                             disabled={!table.getCanPreviousPage()}
                         >
                             <ChevronLeft size={16} />
