@@ -8,17 +8,25 @@ export const getLeads = async (pageNo, limit, globalFilter) => {
         }
     )
 };
-export const getIvrLogs = async (
-    filterType,
+export const getIvrLogs = async ({
+    type,
     fromDate,
-    toDate
-) => {
+    toDate,
+    search = '',
+    perPage = 10,
+    currentPage = 1,
+    status = ''
+}) => {
     return Api().get(`/leads/mv-success-leads`,
         {
             params: {
-                type: filterType,
-                fromDate: fromDate,
-                toDate: toDate
+                type,
+                fromDate,               // optional
+                toDate,                 // optional
+                search,                 // search term
+                perPage,                // number of records per page
+                currentPage,            // page number
+                status                  // status filter: success, reject, duplicate
             },
             skipAdminAppend: true,
         }
@@ -31,7 +39,7 @@ export const getRmLogs = async (
 ) => {
     return Api().get(`/leads/rm-success-leads`,
         {
-          
+
             skipAdminAppend: true,
         }
     )
@@ -43,7 +51,7 @@ export const getOmozingLogs = async (
 ) => {
     return Api().get(`/leads/omozing-success-leads`,
         {
-          
+
             skipAdminAppend: true,
         }
     )
