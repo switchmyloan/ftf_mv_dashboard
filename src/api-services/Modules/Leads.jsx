@@ -23,7 +23,6 @@ export const getIvrLogs = async ({
                 type,
                 fromDate,
                 toDate,
-                search,
                 perPage,
                 currentPage,
                 status,
