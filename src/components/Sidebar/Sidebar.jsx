@@ -411,7 +411,7 @@ function Sidebar({ onClose, collapsed, onToggleCollapse }) {
     >
       {/* Header */}
       <div className="p-[15px] flex justify-between items-center border-b border-gray-200 bg-black">
-        <h1 className="text-white">{collapsed ? "SML" : "SML Moneyview"}</h1>
+        <h1 className="text-white">{collapsed ? "Fintifi" : "Fintifi Moneyview"}</h1>
         <div className="flex items-center gap-2">
           <button onClick={onToggleCollapse} className="text-gray-500 hover:text-primary">
             {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
