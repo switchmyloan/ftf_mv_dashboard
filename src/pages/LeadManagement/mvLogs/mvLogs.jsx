@@ -68,10 +68,10 @@ const Leads = () => {
         setRawData(apiData);
         setFilteredCount(res.data.pagination.total || 0);
         setSummaryMetrics({
-          totalLeads: res?.data?.summaryObj?.total || 0,
-          successCount: res?.data?.summaryObj?.success,
-          rejectCount: res?.data?.summaryObj?.reject,
-          duplicateCount: res?.data?.summaryObj?.duplicate
+          totalLeads: res?.data?.summary?.total || 10,
+          successCount: res?.data?.summary?.success,
+          rejectCount: res?.data?.summary?.rejected,
+          duplicateCount: res?.data?.summary?.deduped
         });
 
       } else {
@@ -240,9 +240,17 @@ const Leads = () => {
     <>
       <Toaster />
 
-      <SummaryCards
+      {/* <SummaryCards
         metrics={dynamicMetrics}
         loading={loading}
+      /> */}
+      <SummaryCards
+        totalLeads={Number(summaryMetrics.totalLeads) || 0}
+        successCount={Number(summaryMetrics.successCount) || 0}
+        rejectCount={Number(summaryMetrics.rejectCount) || 0}
+        duplicateCount={Number(summaryMetrics.duplicateCount) || 0}
+        loading={loading}
+        duplicateCard={true}
       />
 
       <ExportModal

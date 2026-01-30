@@ -17,7 +17,7 @@ export const getIvrLogs = async ({
     status = '',
     search = '',
 }) => {
-    return Api().get(`/leads/mv-success-leads`,
+    return Api().get(`/leads/mv-success-lead`,
         {
             params: {
                 type,

@@ -355,7 +355,7 @@ export const ivrLogsColumn = ({ handleEdit, handleDelete }) => [
     }
     
     // Red Chip for Rejected Lead
-    if (message.includes('Lead has been rejected')) {
+    if (message.includes('rejected')) {
       return (
         <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
           {message}
